@@ -1,8 +1,12 @@
 package enric.domenech.app2u.ui.screens.home
 
+import androidx.compose.animation.core.AnimationState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,13 +27,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,7 +54,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil3.compose.AsyncImage
 import enric.domenech.app2u.R
 import enric.domenech.app2u.domain.models.Result
 import enric.domenech.app2u.ui.navigation.DETAIL
@@ -55,7 +66,7 @@ fun HomeView(
     val data = vm.dataState.collectAsState(initial = emptyList()).value
 
     Scaffold(
-        topBar = { TopAppBar() },
+        topBar = { TopCustomAppBar() },
         bottomBar = { BottomAppBar() },
         content = { paddingValues ->
             HomeViewContent(paddingValues, nav, data)
@@ -74,68 +85,122 @@ private fun HomeViewContent(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
+            .padding(top = 16.dp)
             .padding(paddingValues),
     ) {
         item {
-            SectionTitle()
+            TitleSection()
         }
         item {
             IconSelector()
         }
-
         item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-            ) {
-                data.forEach {
-                    Column(
-                        modifier = Modifier.clickable {
-                            nav.navigate(DETAIL(it.id))
-                        }
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Text(
-                                it.firstName + " " + it.lastName,
-                                style = TextStyle(
-                                    fontSize = 28.sp,
-                                    color = MaterialTheme.colorScheme.onBackground
-                                )
-                            )
-                            Spacer(Modifier.weight(1f))
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(
-                                    modifier = Modifier.size(32.dp),
-                                    painter = painterResource(R.drawable.ic_heart),
-                                    contentDescription = "Favorite",
-                                    tint = MaterialTheme.colorScheme.onBackground
-                                )
-                            }
-                        }
-                        Image(
-                            modifier = Modifier
-                                .background(Color.Gray)
-                                .aspectRatio(16 / 9f),
-                            painter = painterResource(R.drawable.ic_frame),
-                            contentDescription = it.firstName,
+            ItemList(data, nav)
+        }
+    }
+}
 
-                            )
-                        AsyncImage(
-                            model = it.image,
-                            contentDescription = it.firstName,
-                        )
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TopCustomAppBar() {
+    TopAppBar(
+        navigationIcon = {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_camera),
+                    contentDescription = "Scan",
+                    modifier = Modifier.size(50.dp),
+                )
+                Text("Scan")
+            }
+        },
+        windowInsets = WindowInsets.statusBars,
+        title = {},
+        actions = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            ) {
+                IconButton(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(Color.LightGray),
+                    onClick = {
+
                     }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.AccountCircle,
+                        contentDescription = "Favorite",
+                        tint = Color.White
+                    )
                 }
+            }
+        },
+        expandedHeight = 80.dp,
+        colors = TopAppBarColors(
+            scrolledContainerColor = Color.Transparent,
+            containerColor = Color.Transparent,
+            navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+            titleContentColor = MaterialTheme.colorScheme.onBackground,
+            actionIconContentColor = MaterialTheme.colorScheme.onBackground,
+        ),
+        scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    )
+}
+
+@Composable
+private fun TitleSection() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp),
+    ) {
+        Column(
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text(
+                "INCADAQUÉS 2020",
+                style = TextStyle(
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 26.sp,
+                ),
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                "15 -25 Octubre 2020",
+                color = Color.DarkGray,
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+        ) {
+            IconButton(
+                onClick = { },
+                modifier = Modifier.size(56.dp)
+            ) {
+                Icon(
+                    modifier = Modifier.size(32.dp),
+                    painter = painterResource(R.drawable.ic_heart_fill),
+                    contentDescription = "Festival",
+                    tint = lerp(Color.Black, Color.Transparent, 0.5f)
+                )
             }
         }
     }
 }
+
 
 @Composable
 private fun IconSelector() {
@@ -216,100 +281,61 @@ private fun IconSelector() {
     }
 }
 
-@Composable
-private fun SectionTitle() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp),
-    ) {
-        Column(
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    "INCADAQUÉS 2020",
-                    style = TextStyle(
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 26.sp,
-                    ),
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                "15 -25 Octubre 2020",
-                color = Color.DarkGray,
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        Column(
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.Top
-        ) {
-            IconButton(
-                onClick = { },
-                modifier = Modifier.size(56.dp)
-            ) {
-                Icon(
-                    modifier = Modifier.size(32.dp),
-                    painter = painterResource(R.drawable.ic_heart_fill),
-                    contentDescription = "Festival",
-                    tint = lerp(Color.Black, Color.Transparent, 0.5f)
-                )
-            }
-        }
-    }
-}
 
 @Composable
-private fun TopAppBar() {
-    Row(
+private fun ItemList(
+    data: List<Result>,
+    nav: NavHostController
+) {
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(WindowInsets.statusBars.asPaddingValues()),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top,
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(8.dp)
-                .padding(horizontal = 24.dp, vertical = 16.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_camera),
-                contentDescription = "Scan",
-                modifier = Modifier.size(50.dp),
-            )
-            Text("Scan")
-        }
-
-        Column(
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .padding(8.dp)
-                .padding(top = 20.dp, end = 20.dp)
-        ) {
-            IconButton(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(Color.LightGray),
-                onClick = {
-
+        data.forEach {
+            var isFavorite by remember { mutableStateOf(false) }
+            Column(
+                modifier = Modifier.clickable {
+                    nav.navigate(DETAIL(it.id))
                 }
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.AccountCircle,
-                    contentDescription = "Favorite",
-                    tint = Color.White
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        it.firstName + " " + it.lastName,
+                        style = TextStyle(
+                            fontSize = 28.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    )
+                    Spacer(Modifier.weight(1f))
+                    IconButton(
+                        onClick = {
+                            isFavorite = !isFavorite
+                        }
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(32.dp),
+                            painter = painterResource(R.drawable.ic_heart),
+                            contentDescription = "Favorite",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                }
+                Image(
+                    modifier = Modifier
+                        .background(Color.Gray)
+                        .aspectRatio(16 / 9f),
+                    painter = painterResource(R.drawable.ic_frame),
+                    contentDescription = it.firstName
                 )
+//                        AsyncImage(
+//                            model = it.image,
+//                            contentDescription = it.firstName,
+//                        )
             }
         }
     }

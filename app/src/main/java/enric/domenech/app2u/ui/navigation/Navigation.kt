@@ -4,6 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import enric.domenech.app2u.ui.screens.detail.DetailView
+import enric.domenech.app2u.ui.screens.detail.DetailViewModel
 import enric.domenech.app2u.ui.screens.home.HomeView
 import enric.domenech.app2u.ui.screens.home.HomeViewModel
 import org.koin.compose.koinInject
@@ -22,16 +25,16 @@ fun Navigation(
             )
         }
 
-//        composable<DETAIL> { backStackEntry ->
-////            val detail = backStackEntry.toRoute<DETAIL>()
-//            DetailView(
-//                detailId = detail.detailId,
-//                nav = nav,
-////                vm = DetailViewModel(
-////                    repository = koinInject(),
-////                    nurseId = detail.nurseId
-////                )
-//            )
-//        }
+        composable<DETAIL> { backStackEntry ->
+            val detail = backStackEntry.toRoute<DETAIL>()
+            DetailView(
+                nav = nav,
+                dataId = detail.detailId,
+                vm = DetailViewModel(
+                    repository = koinInject(),
+                    dataId = detail.detailId
+                )
+            )
+        }
     }
 }
