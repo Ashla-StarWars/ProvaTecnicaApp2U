@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import enric.domenech.app2u.ui.screens.home.HomeView
 import enric.domenech.app2u.ui.screens.home.HomeViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun Navigation(
@@ -16,20 +17,20 @@ fun Navigation(
 
         composable<HOME> {
             HomeView(
-//                nav = nav,
-//                vm = HomeViewModel(),
+                nav = nav,
+                vm = HomeViewModel(koinInject()),
             )
         }
 
 //        composable<DETAIL> { backStackEntry ->
-//            val detail = backStackEntry.toRoute<DETAIL>()
+////            val detail = backStackEntry.toRoute<DETAIL>()
 //            DetailView(
-//                nurseId = detail.nurseId,
+//                detailId = detail.detailId,
 //                nav = nav,
-//                vm = DetailViewModel(
-//                    repository = koinInject(),
-//                    nurseId = detail.nurseId
-//                )
+////                vm = DetailViewModel(
+////                    repository = koinInject(),
+////                    nurseId = detail.nurseId
+////                )
 //            )
 //        }
     }

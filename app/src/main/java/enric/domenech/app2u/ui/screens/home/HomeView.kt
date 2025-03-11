@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,27 +41,35 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import coil3.compose.AsyncImage
 import enric.domenech.app2u.R
+import enric.domenech.app2u.domain.models.Result
+import enric.domenech.app2u.ui.navigation.DETAIL
 
 @Composable
 fun HomeView(
-//    nav: NavHostController,
-//    vm: HomeViewModel
+    nav: NavHostController,
+    vm: HomeViewModel
 ) {
+    val data = vm.dataState.collectAsState(initial = emptyList()).value
 
     Scaffold(
         topBar = { TopAppBar() },
         bottomBar = { BottomAppBar() },
         content = { paddingValues ->
-            HomeViewContent(paddingValues)
+            HomeViewContent(paddingValues, nav, data)
         },
         containerColor = Color(0xFFD99079)
     )
-
 }
 
 @Composable
-private fun HomeViewContent(paddingValues: PaddingValues) {
+private fun HomeViewContent(
+    paddingValues: PaddingValues,
+    nav: NavHostController,
+    data: List<Result>
+) {
 
     LazyColumn(
         modifier = Modifier
@@ -72,10 +82,58 @@ private fun HomeViewContent(paddingValues: PaddingValues) {
         item {
             IconSelector()
         }
+
         item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                data.forEach {
+                    Column(
+                        modifier = Modifier.clickable {
+                            nav.navigate(DETAIL(it.id))
+                        }
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                it.firstName + " " + it.lastName,
+                                style = TextStyle(
+                                    fontSize = 28.sp,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            )
+                            Spacer(Modifier.weight(1f))
+                            IconButton(
+                                onClick = {}
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(32.dp),
+                                    painter = painterResource(R.drawable.ic_heart),
+                                    contentDescription = "Favorite",
+                                    tint = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+                        }
+                        Image(
+                            modifier = Modifier
+                                .background(Color.Gray)
+                                .aspectRatio(16 / 9f),
+                            painter = painterResource(R.drawable.ic_frame),
+                            contentDescription = it.firstName,
 
+                            )
+                        AsyncImage(
+                            model = it.image,
+                            contentDescription = it.firstName,
+                        )
+                    }
+                }
+            }
         }
-
     }
 }
 

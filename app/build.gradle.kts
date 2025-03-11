@@ -42,6 +42,20 @@ android {
 
 dependencies {
 
+    // Ktor
+//    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.bundles.ktor.common)
+    implementation(libs.coil.network.ktor)
+    implementation(libs.ktor.utils)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Coil
+    implementation(libs.coil.compose)
+
     // Koin
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
