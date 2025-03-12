@@ -11,6 +11,7 @@ import enric.domenech.app2u.ui.theme.ProvaTecnicaApp2UTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         setContent {
             ProvaTecnicaApp2UTheme {

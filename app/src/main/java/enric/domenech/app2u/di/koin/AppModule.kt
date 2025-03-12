@@ -1,41 +1,75 @@
 package enric.domenech.app2u.di.koin
 
+import enric.domenech.app2u.data.realmDB.RealmResult
+import enric.domenech.app2u.data.network.NetworkServiceImpl
+import enric.domenech.app2u.data.repositories.RepositoryImpl
+import enric.domenech.app2u.ui.screens.detail.DetailViewModel
 import enric.domenech.app2u.ui.screens.home.HomeViewModel
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.http.HttpHeaders
+import io.ktor.http.URLProtocol
+import io.ktor.serialization.kotlinx.json.json
+import io.realm.kotlin.Realm
+import io.realm.kotlin.RealmConfiguration
 import kotlinx.serialization.json.Json
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
+import java.util.Base64
 
-// Define el módulo de Koin
 val appModule = module {
 
-    // Configuración de Json con prettyPrint
+    // Realm
     single {
-        Json { prettyPrint = true; ignoreUnknownKeys = true }
+        val config = RealmConfiguration.Builder(schema = setOf(RealmResult::class))
+            .name("app2u.realm")
+            .deleteRealmIfMigrationNeeded()
+            .build()
+        Realm.open(config)
     }
 
-    // HttpClient client singleton
-//    single {
-//        HttpClient(OkHttp) {
-//            val json = get<Json>()
-//            install(ContentNegotiation) {
-//                json(json)
-//            }
-//            install(Logging) {
-//                level = LogLevel.BODY
-//            }
-//            install(DefaultRequest) {
-//                url {
-//                    protocol = URLProtocol.HTTP
-//                    host = "10.118.3.210"
-//                    port = 8080
-//                }
-//            }
-//        }
-//    }
+    // Json
+    single {
+        Json {
+            prettyPrint = true
+            ignoreUnknownKeys = true
+        }
+    }
 
-    viewModel { HomeViewModel() }
+    // HTTPS Client
+    single {
+        HttpClient {
+            install(ContentNegotiation) {
+                json(get())
+            }
+            defaultRequest {
+                url {
+                    protocol = URLProtocol.HTTPS
+
+                    host = "inphototest.app2u.es"
+                    val username = "test@gmail.com"
+                    val password = "1234"
+                    val userPass = "$username:$password"
+                    val encoded = Base64.getEncoder().encodeToString(userPass.toByteArray())
+                    headers.append(HttpHeaders.Authorization, "Basic $encoded")
+                    headers.append(HttpHeaders.Accept, "application/json")
+                }
+            }
+        }
+    }
+
+    // APIs
+    single { NetworkServiceImpl(get(), get()) }
+
+    // Repositories
+    single { RepositoryImpl(get()) }
+
+    // ViewModels
+    viewModel { HomeViewModel(get(), get()) }
+    viewModel { (dataId: Int) -> DetailViewModel(dataId, get(), get()) }
 
 }
 
@@ -44,10 +78,4 @@ fun initKoin(config: KoinAppDeclaration? = null) {
         config?.invoke(this)
         modules(appModule)
     }
-
-    //val networkServices: NetworkServicesImpl = getKoin().get()
-    //Log.d(TAG, "CLIENTE HTTP INYECTADO en NetworkServices: $networkServices")
-
-    //val viewModelProfile: ProfileViewModel = getKoin().get()
-    //Log.d(TAG, "VIEWMODEL INYECTADO en ProfileViewModel: $viewModelProfile")
 }
