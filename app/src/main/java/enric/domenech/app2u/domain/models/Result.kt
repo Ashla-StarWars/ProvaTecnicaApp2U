@@ -1,5 +1,6 @@
 package enric.domenech.app2u.domain.models
 
+import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -16,5 +17,7 @@ data class Result(
     val instagram: String?,
     @SerialName("is_removed") val isRemoved: Boolean,
     @SerialName("last_name") val lastName: String,
-    val webpage: String?
+    val webpage: String?,
+    var isFavorite: Boolean? = false,
+    var imageBitmap: ImageBitmap? = null
 )

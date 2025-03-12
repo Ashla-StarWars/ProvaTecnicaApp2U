@@ -7,4 +7,5 @@ interface Repository {
     suspend fun fetchNextPage(page: Int)
 
     fun getCachedData() : List<Result>
+    fun updateData(data: List<Result>)
 }

@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.kotlin.realm)
 }
 
 android {
@@ -11,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "enric.domenech.app2u"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -42,19 +43,16 @@ android {
 
 dependencies {
 
+    // Realm
+    implementation(libs.kotlin.realm.library.base)
+
     // Ktor
-//    implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.bundles.ktor.common)
-    implementation(libs.coil.network.ktor)
-    implementation(libs.ktor.utils)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-
-    // Coil
-    implementation(libs.coil.compose)
 
     // Koin
     implementation(libs.koin.android)

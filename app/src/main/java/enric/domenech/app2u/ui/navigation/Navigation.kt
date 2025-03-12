@@ -15,16 +15,19 @@ import org.koin.compose.koinInject
 fun Navigation(
     nav: NavHostController,
 ) {
-
-    NavHost(navController = nav, startDestination = HOME) {
-
+    NavHost(
+        navController = nav,
+        startDestination = HOME
+    ) {
         composable<HOME> {
             HomeView(
                 nav = nav,
-                vm = HomeViewModel(koinInject()),
+                vm = HomeViewModel(
+                    koinInject(),
+                    koinInject()
+                ),
             )
         }
-
         composable<DETAIL> { backStackEntry ->
             val detail = backStackEntry.toRoute<DETAIL>()
             DetailView(
@@ -32,7 +35,8 @@ fun Navigation(
                 dataId = detail.detailId,
                 vm = DetailViewModel(
                     repository = koinInject(),
-                    dataId = detail.detailId
+                    dataId = detail.detailId,
+                    realm = koinInject()
                 )
             )
         }

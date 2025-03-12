@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 pluginManagement {
     repositories {
         google {
@@ -9,6 +11,9 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+    }
+    plugins {
+        id("io.realm.kotlin") version "10.19.0"
     }
 }
 dependencyResolutionManagement {

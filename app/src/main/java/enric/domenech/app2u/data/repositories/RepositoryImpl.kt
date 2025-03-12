@@ -12,8 +12,8 @@ class RepositoryImpl(
     private val _dataState = MutableStateFlow<List<Result>>(emptyList())
     val dataState: StateFlow<List<Result>> get() = _dataState
 
-    private val _currentPage = MutableStateFlow(1)
-    val currentPage: StateFlow<Int> get() = _currentPage
+//    private val _currentPage = MutableStateFlow(1)
+//    val currentPage: StateFlow<Int> get() = _currentPage
 
     override suspend fun fetchDataFromServer() {
         _dataState.value = conn.fetchDataFromServer()
@@ -21,6 +21,10 @@ class RepositoryImpl(
 
     override suspend fun fetchNextPage(page: Int) {
         TODO("Not yet implemented")
+    }
+
+    override fun updateData(data: List<Result>) {
+        _dataState.value = data
     }
 
     override fun getCachedData(): List<Result> {
