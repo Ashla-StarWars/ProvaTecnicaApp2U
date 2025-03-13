@@ -10,6 +10,8 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import enric.domenech.app2u.data.network.NetworkMonitor
+import enric.domenech.app2u.data.realmDB.PendingLike
 import enric.domenech.app2u.data.realmDB.RealmResult
 import enric.domenech.app2u.data.repositories.RepositoryImpl
 import enric.domenech.app2u.domain.models.Result
@@ -24,11 +26,11 @@ import java.io.ByteArrayOutputStream
 
 class HomeViewModel(
     private val repository: RepositoryImpl,
+    private val networkMonitor: NetworkMonitor,
     private val realm: Realm
 ) : ViewModel() {
 
-    var state by mutableStateOf(UiState())
-        private set
+    private var state by mutableStateOf(UiState())
 
     private val _dataState = MutableStateFlow<List<Result>>(emptyList())
     val dataState: StateFlow<List<Result>> = _dataState
@@ -162,6 +164,53 @@ class HomeViewModel(
                     _dataState.value = getCachedData()
                 } catch (e: Exception) {
                     println("Error al cambiar estado de favorito: ${e.message}")
+                }
+                if (!networkMonitor.isConnected.value) {
+                    savePendingLike(idResult)
+                } else {
+                    sendLikeToServer(idResult)
+                }
+            }
+        }
+    }
+
+    private fun savePendingLike(idResult: Int) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                realm.write {
+                    val pendingLike = PendingLike().apply {
+                        this.idResult = idResult
+                    }
+                    copyToRealm(pendingLike, updatePolicy = UpdatePolicy.ALL)
+                }
+            }
+        }
+    }
+
+    private fun sendLikeToServer(idResult: Int) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                // Mock sending like to server
+                println("Sending like for id: $idResult")
+                // Remove pending like from Realm
+                realm.write {
+                    val pendingLike = query(clazz = PendingLike::class).find().firstOrNull { it.idResult == idResult }
+                    pendingLike?.let {
+                        delete(pendingLike)
+                    }
+                }
+                state = UiState(isLoading = false, onSucces = true)
+            }
+        }
+    }
+
+    fun syncPendingLikes() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val pendingLikes = realm.query(PendingLike::class).find()
+                println("Found ${pendingLikes.size} pending likes to sync")
+                pendingLikes.forEach { pendingLike ->
+                    sendLikeToServer(pendingLike.idResult)
                 }
             }
         }

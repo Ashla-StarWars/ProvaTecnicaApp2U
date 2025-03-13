@@ -21,7 +21,9 @@ fun DetailView(
     Scaffold(
         topBar = { DetailTopAppBar(nav) },
         content = { paddingValues ->
-            DetailContent(item, paddingValues, vm)
+            DetailContent(item, paddingValues, onFavoriteClick = {
+                vm.toggleFavorite(it.id)
+            })
         }
     )
 }

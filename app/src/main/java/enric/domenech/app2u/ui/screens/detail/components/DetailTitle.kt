@@ -10,21 +10,23 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import enric.domenech.app2u.R
 import enric.domenech.app2u.domain.models.Result
-import enric.domenech.app2u.ui.screens.detail.DetailViewModel
 
 @Composable
 fun DetailTitle(
     item: Result?,
-    isFavorite: Boolean?,
-    vm: DetailViewModel
+    onFavoriteClick: () -> Unit,
 ) {
-    var isFavorite1 = isFavorite
+    var isFavorite by remember { mutableStateOf(item?.isFavorite) }
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.padding(24.dp),
@@ -37,14 +39,13 @@ fun DetailTitle(
         Spacer(modifier = Modifier.weight(1f))
         IconButton(
             onClick = {
-                isFavorite1 = !isFavorite1!!
-                vm.toggleFavorite(item?.id!!)
-                item.isFavorite = isFavorite1
+                isFavorite = !isFavorite!!
+                onFavoriteClick()
             },
         ) {
             Icon(
                 modifier = Modifier.size(52.dp),
-                painter = if (isFavorite1 == true) painterResource(R.drawable.ic_heart_fill)
+                painter = if (isFavorite == true) painterResource(R.drawable.ic_heart_fill)
                 else painterResource(R.drawable.ic_heart),
                 contentDescription = "Favorite",
                 tint = MaterialTheme.colorScheme.onBackground

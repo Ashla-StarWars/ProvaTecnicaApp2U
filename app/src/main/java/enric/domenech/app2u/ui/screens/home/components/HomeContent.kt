@@ -15,7 +15,7 @@ fun HomeContent(
     paddingValues: PaddingValues,
     nav: NavHostController,
     data: List<Result>,
-    vm: HomeViewModel
+    vm: HomeViewModel,
 ) {
 
     LazyColumn(

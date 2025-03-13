@@ -1,7 +1,9 @@
 package enric.domenech.app2u.di.koin
 
+import enric.domenech.app2u.data.network.NetworkMonitor
 import enric.domenech.app2u.data.realmDB.RealmResult
 import enric.domenech.app2u.data.network.NetworkServiceImpl
+import enric.domenech.app2u.data.realmDB.PendingLike
 import enric.domenech.app2u.data.repositories.RepositoryImpl
 import enric.domenech.app2u.ui.screens.detail.DetailViewModel
 import enric.domenech.app2u.ui.screens.home.HomeViewModel
@@ -24,7 +26,7 @@ val appModule = module {
 
     // Realm
     single {
-        val config = RealmConfiguration.Builder(schema = setOf(RealmResult::class))
+        val config = RealmConfiguration.Builder(schema = setOf(RealmResult::class, PendingLike::class))
             .name("app2u.realm")
             .deleteRealmIfMigrationNeeded()
             .build()
@@ -67,9 +69,13 @@ val appModule = module {
     // Repositories
     single { RepositoryImpl(get()) }
 
+    // NetworkMonitor
+    single { NetworkMonitor(get()) }
+
     // ViewModels
-    viewModel { HomeViewModel(get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { (dataId: Int) -> DetailViewModel(dataId, get(), get()) }
+
 
 }
 

@@ -24,6 +24,7 @@ fun Navigation(
                 nav = nav,
                 vm = HomeViewModel(
                     koinInject(),
+                    koinInject(),
                     koinInject()
                 ),
             )
