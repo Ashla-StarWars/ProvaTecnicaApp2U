@@ -36,7 +36,9 @@ class HomeViewModel(
     val dataState: StateFlow<List<Result>> = _dataState
 
     init {
+        // Inicializa el ViewModel cargando datos desde cache o servidor
         viewModelScope.launch(Dispatchers.IO) {
+            // Código de inicialización...
             state = UiState(isLoading = true)
             val cachedData = getCachedData()
             if (cachedData.isEmpty()) {
@@ -57,6 +59,10 @@ class HomeViewModel(
         }
     }
 
+    /**
+     * Obtiene los datos almacenados en la base de datos local Realm
+     * @return Lista de resultados desde la caché
+     */
     private suspend fun getCachedData(): List<Result> {
         return withContext(Dispatchers.IO) {
             val realmResults = realm.query(RealmResult::class).find()
@@ -81,6 +87,10 @@ class HomeViewModel(
         }
     }
 
+    /**
+     * Guarda los datos en la base de datos local Realm
+     * @param data Lista de objetos RealmResult para guardar
+     */
     private fun saveDataToRealm(data: List<RealmResult>) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -109,6 +119,11 @@ class HomeViewModel(
         }
     }
 
+    /**
+     * Convierte los objetos Result del dominio a objetos RealmResult para la persistencia
+     * @param results Lista de objetos Result
+     * @return Lista de objetos RealmResult
+     */
     private fun mapResultsToRealmResults(results: List<Result>): List<RealmResult> {
         return results.map { result ->
             RealmResult().apply {
@@ -130,6 +145,11 @@ class HomeViewModel(
         }
     }
 
+    /**
+     * Convierte un ImageBitmap a un array de bytes para almacenamiento
+     * @param imageBitmap La imagen a convertir
+     * @return Array de bytes de la imagen
+     */
     private fun imageBitmapToByteArray(imageBitmap: ImageBitmap): ByteArray {
         val bitmap = imageBitmap.asAndroidBitmap()
         val stream = ByteArrayOutputStream()
@@ -137,13 +157,21 @@ class HomeViewModel(
         return stream.toByteArray()
     }
 
+    /**
+     * Convierte un array de bytes a ImageBitmap para mostrar en UI
+     * @param byteArray Array de bytes a convertir
+     * @return ImageBitmap resultante o null
+     */
     private fun byteArrayToImageBitmap(byteArray: ByteArray): ImageBitmap? {
         val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
         return bitmap?.asImageBitmap()
     }
 
+    /**
+     * Alterna el estado de favorito de un resultado y lo persiste
+     * @param idResult ID del resultado a modificar
+     */
     fun toggleFavorite(idResult: Int) {
-
         viewModelScope.launch {
             val updatedList = _dataState.value.map { result ->
                 if (result.id == idResult) {
@@ -174,6 +202,10 @@ class HomeViewModel(
         }
     }
 
+    /**
+     * Guarda un "like" pendiente cuando no hay conexión a internet
+     * @param idResult ID del resultado para el like
+     */
     private fun savePendingLike(idResult: Int) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -188,6 +220,10 @@ class HomeViewModel(
         }
     }
 
+    /**
+     * Envía un "like" al servidor y elimina el pendiente si existe
+     * @param idResult ID del resultado para el like
+     */
     private fun sendLikeToServer(idResult: Int) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -205,6 +241,9 @@ class HomeViewModel(
         }
     }
 
+    /**
+     * Sincroniza todos los "likes" pendientes cuando se recupera la conexión
+     */
     fun syncPendingLikes() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {

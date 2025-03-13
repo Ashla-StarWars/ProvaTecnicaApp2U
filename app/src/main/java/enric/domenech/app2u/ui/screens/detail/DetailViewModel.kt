@@ -27,7 +27,10 @@ class DetailViewModel(
     private val _dataState = MutableStateFlow<Result?>(null)
     val dataState: StateFlow<Result?> = _dataState
 
-
+    /**
+     * Inicializa el ViewModel cargando los datos del resultado específico
+     * basado en el ID proporcionado
+     */
     init {
         viewModelScope.launch {
             state = UiState(isLoading = true)
@@ -38,6 +41,10 @@ class DetailViewModel(
         }
     }
 
+    /**
+     * Alterna el estado de favorito de un resultado y lo persiste en Realm
+     * @param idResult ID del resultado a modificar
+     */
     fun toggleFavorite(idResult: Int) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
