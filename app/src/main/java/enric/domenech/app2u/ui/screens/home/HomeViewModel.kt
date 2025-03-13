@@ -177,6 +177,7 @@ class HomeViewModel(
     private fun savePendingLike(idResult: Int) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
+                println("Saveing like for id: $idResult")
                 realm.write {
                     val pendingLike = PendingLike().apply {
                         this.idResult = idResult
