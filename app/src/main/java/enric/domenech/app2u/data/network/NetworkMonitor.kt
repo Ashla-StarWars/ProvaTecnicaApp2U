@@ -12,8 +12,6 @@ import org.koin.java.KoinJavaComponent.inject
 
 class NetworkMonitor(context: Context) {
 
-
-
     private val vm by inject<HomeViewModel>(HomeViewModel::class.java)
     private val _isConnected = MutableStateFlow(false)
     val isConnected: StateFlow<Boolean> get() = _isConnected
