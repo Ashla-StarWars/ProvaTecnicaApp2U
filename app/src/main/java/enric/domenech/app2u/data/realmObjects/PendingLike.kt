@@ -1,4 +1,4 @@
-package enric.domenech.app2u.data.realmDB
+package enric.domenech.app2u.data.realmObjects
 
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
@@ -17,4 +17,5 @@ import io.realm.kotlin.types.annotations.PrimaryKey
  */
 class PendingLike : RealmObject {
     @PrimaryKey var idResult: Int = 0
+    var isFavorite: Boolean = false
 }

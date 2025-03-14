@@ -47,4 +47,10 @@ interface NetworkService {
      * @return Imagen convertida a ImageBitmap o null si ocurre algún error.
      */
     suspend fun fetchImageAsBitmap(imageUrl: String): ImageBitmap?
+
+    /**
+     * Mock de una petición al servidor para actualizar el estado de favorito
+     * de un objeto Result.
+     */
+    suspend fun sendLikeToServer(idResult: Int, isFavorite: Boolean) : Boolean
 }

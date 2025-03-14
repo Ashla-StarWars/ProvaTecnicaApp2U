@@ -3,7 +3,7 @@ package enric.domenech.app2u.domain.repositories
 import enric.domenech.app2u.domain.models.Result
 
 /**
- * Repository
+ * NetworkRepository
  *
  * Interfaz que define las operaciones de acceso a datos para la aplicación,
  * actuando como punto de entrada único entre la capa de datos y la capa de lógica de negocio.
@@ -15,11 +15,11 @@ import enric.domenech.app2u.domain.models.Result
  * - Proporcionar funcións para actualizar los datos almacenados
  * - Manejar la paginación de resultados para grandes conjuntos de datos
  *
- * Su implementación concreta (RepositoryImpl) coordina la comunicación con
+ * Su implementación concreta (NetworkRepositoryImpl) coordina la comunicación con
  * el servicio de red (NetworkService) y con almacenamiento local,
  * proporcionando una API limpia y coherente al resto de la aplicación.
  */
-interface Repository {
+interface NetworkRepository {
     /**
      * Obtiene datos del servidor remoto y actualiza el estado interno.
      */
@@ -32,6 +32,15 @@ interface Repository {
     suspend fun fetchNextPage(page: String)
 
     /**
+     * Mock de una petición al servidor para actualizar el estado de favorito
+     * de un objeto Result.
+     * @param id ID del objeto a actualizar
+     * @param isFavorite Nuevo estado de favorito
+     * @return Boolean que indica si la operación fue exitosa
+     */
+    suspend fun updateFavoriteStatus(id: Int, isFavorite: Boolean)
+
+    /**
      * Devuelve los datos actualmente almacenados en caché.
      * @return Lista de resultados almacenados localmente.
      */
@@ -42,4 +51,6 @@ interface Repository {
      * @param data Nueva lista de resultados para actualizar el caché.
      */
     fun updateData(data: List<Result>)
+
+
 }

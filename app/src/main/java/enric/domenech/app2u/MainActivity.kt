@@ -7,6 +7,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import enric.domenech.app2u.ui.navigation.Navigation
 import enric.domenech.app2u.ui.theme.ProvaTecnicaApp2UTheme
+import org.koin.androidx.compose.KoinAndroidContext
+import org.koin.core.annotation.KoinExperimentalAPI
 
 /**
  * MainActivity
@@ -36,13 +38,16 @@ class MainActivity : ComponentActivity() {
      *
      * @param savedInstanceState Estado guardado de la actividad, puede ser null si es la primera creación.
      */
+    @OptIn(KoinExperimentalAPI::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
         setContent {
             ProvaTecnicaApp2UTheme {
-                Navigation(nav = rememberNavController())
+                KoinAndroidContext {
+                    Navigation(nav = rememberNavController())
+                }
             }
         }
     }

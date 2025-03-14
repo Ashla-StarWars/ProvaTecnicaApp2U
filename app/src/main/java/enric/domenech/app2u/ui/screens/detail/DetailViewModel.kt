@@ -5,10 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import enric.domenech.app2u.data.realmDB.RealmResult
-import enric.domenech.app2u.data.repositories.RepositoryImpl
+import enric.domenech.app2u.data.repositories.NetworkRepositoryImpl
+import enric.domenech.app2u.data.repositories.RealmRepositoryImpl
 import enric.domenech.app2u.domain.models.Result
-import io.realm.kotlin.Realm
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,28 +16,43 @@ import kotlinx.coroutines.withContext
 
 class DetailViewModel(
     private val dataId: Int,
-    private val repository: RepositoryImpl,
-    private val realm: Realm
+    private val networkRepository: NetworkRepositoryImpl,
+    private val realmRepository: RealmRepositoryImpl
 ) : ViewModel() {
 
-    var state by mutableStateOf(UiState())
-        private set
+    private var state by mutableStateOf(UiState())
 
     private val _dataState = MutableStateFlow<Result?>(null)
     val dataState: StateFlow<Result?> = _dataState
+
+    private val _isDataLoaded = MutableStateFlow(false)
 
     /**
      * Inicializa el ViewModel cargando los datos del resultado específico
      * basado en el ID proporcionado
      */
     init {
-        viewModelScope.launch {
-            state = UiState(isLoading = true)
-            val dataList = repository.getCachedData()
-            val dataToShow = dataList.find { it.id == dataId }
-            _dataState.value = dataToShow
-            state = UiState(isLoading = false)
+        viewModelScope.launch(Dispatchers.IO) {
+            if (!_isDataLoaded.value) {
+                loadDetailData()
+            }
         }
+    }
+
+    private fun loadDetailData() {
+        state = UiState(isLoading = true)
+        if(_dataState.value == null) {
+            val result = realmRepository.findResultById(dataId)
+            if (result != null) {
+                _dataState.value = result
+            } else {
+                val dataList = networkRepository.getCachedData()
+                val dataToShow = dataList.find { it.id == dataId }
+                _dataState.value = dataToShow
+            }
+        }
+        _isDataLoaded.value = true
+        state = UiState(isLoading = false)
     }
 
     /**
@@ -47,17 +61,10 @@ class DetailViewModel(
      */
     fun toggleFavorite(idResult: Int) {
         viewModelScope.launch {
+            _dataState.value = _dataState.value?.copy(isFavorite = !_dataState.value!!.isFavorite!!)
             withContext(Dispatchers.IO) {
-                try {
-                    realm.write {
-                        val result = query(clazz = RealmResult::class).find().firstOrNull { it.id == idResult }
-                        result?.let {
-                            it.isFavorite = !it.isFavorite
-                        }
-                    }
-                } catch (e: Exception) {
-                    println("Error al cambiar estado de favorito: ${e.message}")
-                }
+                realmRepository.toggleFavorite(idResult)
+                networkRepository.updateFavoriteStatus(idResult, _dataState.value!!.isFavorite!!)
             }
         }
     }

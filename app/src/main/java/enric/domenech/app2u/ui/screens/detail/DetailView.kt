@@ -16,14 +16,16 @@ fun DetailView(
     vm: DetailViewModel = koinViewModel { parametersOf(dataId) }
 ) {
 
-    val item = vm.dataState.collectAsState().value
+    val item = vm.dataState.collectAsState()
 
     Scaffold(
         topBar = { DetailTopAppBar(nav) },
         content = { paddingValues ->
-            DetailContent(item, paddingValues, onFavoriteClick = {
-                vm.toggleFavorite(it.id)
-            })
+            item.value?.let { item ->
+                DetailContent(item, paddingValues, onFavoriteClick = {
+                    vm.toggleFavorite(it.id)
+                })
+            }
         }
     )
 }

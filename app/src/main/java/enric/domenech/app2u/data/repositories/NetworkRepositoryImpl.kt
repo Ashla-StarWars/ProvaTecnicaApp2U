@@ -2,12 +2,12 @@ package enric.domenech.app2u.data.repositories
 
 import enric.domenech.app2u.data.network.NetworkServiceImpl
 import enric.domenech.app2u.domain.models.Result
-import enric.domenech.app2u.domain.repositories.Repository
+import enric.domenech.app2u.domain.repositories.NetworkRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * RepositoryImpl
+ * NetworkRepositoryImpl
  *
  * Implementación del repositorio que actúa como intermediario entre la fuente de datos
  * remota (NetworkServiceImpl) y la lógica de negocio de la aplicación.
@@ -18,16 +18,19 @@ import kotlinx.coroutines.flow.StateFlow
  * - Proporcionar acceso a los datos almacenados en caché
  * - Gestionar la actualización de los datos cuando sea necesario
  *
- * Implementa la interfaz Repository para garantizar una correcta separación de
+ * Implementa la interfaz NetworkRepository para garantizar una correcta separación de
  * responsabilidades y facilitar las pruebas unitarias.
  */
-class RepositoryImpl(
-    private val conn: NetworkServiceImpl,
-) : Repository {
+class NetworkRepositoryImpl(
+    private val conn: NetworkServiceImpl
+) : NetworkRepository {
 
     // StateFlow para almacenar y exponer los datos actuales de la aplicación
     private val _dataState = MutableStateFlow<List<Result>>(emptyList())
     val dataState: StateFlow<List<Result>> get() = _dataState
+
+    // StateFlow para almacenar y exponer la respuesta de la peticion al servidor
+    private val _responseState = MutableStateFlow(false)
 
     /**
      * Obtiene datos del servidor remoto y actualiza el estado interno
@@ -59,6 +62,14 @@ class RepositoryImpl(
      */
     override fun getCachedData(): List<Result> {
         return _dataState.value
+    }
+
+    /**
+     * Mock de una petición al servidor para actualizar el estado de favorito
+     * de un objeto Result.
+     */
+    override suspend fun updateFavoriteStatus(id: Int, isFavorite: Boolean) {
+        _responseState.value = conn.sendLikeToServer(id, isFavorite)
     }
 
 }

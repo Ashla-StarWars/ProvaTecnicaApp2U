@@ -19,36 +19,38 @@ fun Navigation(
         navController = nav,
         startDestination = HOME
     ) {
-        /**
-         * Pantalla inicial que muestra la lista de resultados
-         * Inyecta las dependencias necesarias en el ViewModel
-         */
-        composable<HOME> {
-            HomeView(
-                nav = nav,
-                vm = HomeViewModel(
-                    koinInject(),
-                    koinInject(),
-                    koinInject()
-                ),
-            )
-        }
 
-        /**
-         * Pantalla de detalle que muestra información específica de un resultado
-         * Recibe el ID del elemento a mostrar como parámetro de navegación
-         */
-        composable<DETAIL> { backStackEntry ->
-            val detail = backStackEntry.toRoute<DETAIL>()
-            DetailView(
-                nav = nav,
-                dataId = detail.detailId,
-                vm = DetailViewModel(
-                    repository = koinInject(),
-                    dataId = detail.detailId,
-                    realm = koinInject()
+            /**
+             * Pantalla inicial que muestra la lista de resultados
+             * Inyecta las dependencias necesarias en el ViewModel
+             */
+            composable<HOME> {
+                HomeView(
+                    nav = nav,
+                    vm = HomeViewModel(
+                        koinInject(),
+                        koinInject(),
+                        koinInject()
+                    ),
                 )
-            )
-        }
+            }
+
+            /**
+             * Pantalla de detalle que muestra información específica de un resultado
+             * Recibe el ID del elemento a mostrar como parámetro de navegación
+             */
+            composable<DETAIL> { backStackEntry ->
+                val detail = backStackEntry.toRoute<DETAIL>()
+                DetailView(
+                    nav = nav,
+                    dataId = detail.detailId,
+                    vm = DetailViewModel(
+                        dataId = detail.detailId,
+                        networkRepository = koinInject(),
+                        realmRepository = koinInject()
+                    )
+                )
+            }
+
     }
 }
