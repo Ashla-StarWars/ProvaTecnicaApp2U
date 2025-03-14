@@ -9,7 +9,7 @@ import enric.domenech.app2u.domain.models.Result
 
 @Composable
 fun DetailContent(
-    item: Result?,
+    item: Result,
     paddingValues: PaddingValues,
     onFavoriteClick: (Result) -> Unit,
 ) {
@@ -19,7 +19,7 @@ fun DetailContent(
             DetailImage(item)
         }
         item {
-            DetailTitle(item, onFavoriteClick = { onFavoriteClick(item!!)} )
+            DetailTitle(item, onFavoriteClick = { onFavoriteClick(item)} )
         }
         item {
             DetailDescription(item)

@@ -16,13 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import enric.domenech.app2u.domain.models.Result
-import enric.domenech.app2u.ui.screens.home.HomeViewModel
 
 @Composable
 fun HomeList(
     data: List<Result>,
     nav: NavHostController,
-    vm: HomeViewModel,
+    onFavoriteClick: (Int) -> Unit,
 ) {
     if (data.isEmpty()) {
         Box(
@@ -43,9 +42,7 @@ fun HomeList(
             .background(MaterialTheme.colorScheme.background)
     ) {
         data.forEach { item ->
-            HomeItemList(nav, item, onFavoriteClick= {
-                vm.toggleFavorite(item.id)
-            })
+            HomeItemList(nav, item, onFavoriteClick = { onFavoriteClick(item.id) })
         }
     }
 }

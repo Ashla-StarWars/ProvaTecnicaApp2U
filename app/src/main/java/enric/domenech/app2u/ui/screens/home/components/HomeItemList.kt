@@ -14,10 +14,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,7 +34,6 @@ fun HomeItemList(
     item: Result,
     onFavoriteClick: () -> Unit,
 ) {
-    var isFavorite by remember { mutableStateOf(item.isFavorite) }
     Column(
         modifier = Modifier.clickable {
             nav.navigate(DETAIL(item.id))
@@ -54,14 +49,12 @@ fun HomeItemList(
             Spacer(Modifier.weight(1f))
             IconButton(
                 onClick = {
-                    isFavorite = !isFavorite!!
-                    item.isFavorite = isFavorite
                     onFavoriteClick()
                 }) {
                 Icon(
                     modifier = Modifier.size(32.dp),
                     painter =
-                        if (isFavorite == false)
+                        if (item.isFavorite == false)
                             painterResource(R.drawable.ic_heart)
                         else painterResource(
                             R.drawable.ic_heart_fill

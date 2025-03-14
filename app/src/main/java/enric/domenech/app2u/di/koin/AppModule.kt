@@ -1,10 +1,11 @@
 package enric.domenech.app2u.di.koin
 
 import enric.domenech.app2u.data.network.NetworkMonitor
-import enric.domenech.app2u.data.realmDB.RealmResult
+import enric.domenech.app2u.data.realmObjects.RealmResult
 import enric.domenech.app2u.data.network.NetworkServiceImpl
-import enric.domenech.app2u.data.realmDB.PendingLike
-import enric.domenech.app2u.data.repositories.RepositoryImpl
+import enric.domenech.app2u.data.realmObjects.PendingLike
+import enric.domenech.app2u.data.repositories.NetworkRepositoryImpl
+import enric.domenech.app2u.data.repositories.RealmRepositoryImpl
 import enric.domenech.app2u.ui.screens.detail.DetailViewModel
 import enric.domenech.app2u.ui.screens.home.HomeViewModel
 import io.ktor.client.HttpClient
@@ -67,7 +68,8 @@ val appModule = module {
     single { NetworkServiceImpl(get(), get()) }
 
     // Repositories
-    single { RepositoryImpl(get()) }
+    single { NetworkRepositoryImpl(get()) }
+    single { RealmRepositoryImpl(get(), get()) }
 
     // NetworkMonitor
     single { NetworkMonitor(get()) }

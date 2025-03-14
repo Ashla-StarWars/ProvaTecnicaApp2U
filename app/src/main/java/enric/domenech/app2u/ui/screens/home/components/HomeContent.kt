@@ -8,14 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import enric.domenech.app2u.domain.models.Result
-import enric.domenech.app2u.ui.screens.home.HomeViewModel
 
 @Composable
 fun HomeContent(
     paddingValues: PaddingValues,
     nav: NavHostController,
     data: List<Result>,
-    vm: HomeViewModel,
+    onFavoriteClick: (Int) -> Unit,
 ) {
 
     LazyColumn(
@@ -30,7 +29,7 @@ fun HomeContent(
             HomeSelector()
         }
         item {
-            HomeList(data, nav, vm)
+            HomeList(data, nav, onFavoriteClick = { onFavoriteClick(it) })
         }
     }
 }

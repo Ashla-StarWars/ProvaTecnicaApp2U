@@ -5,9 +5,12 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import enric.domenech.app2u.ui.screens.home.HomeViewModel
+import enric.domenech.app2u.data.repositories.RealmRepositoryImpl
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
 
 /**
@@ -23,8 +26,8 @@ import org.koin.java.KoinJavaComponent.inject
 
 class NetworkMonitor(context: Context) {
 
-    // Obtiene una instancia del ViewModel para sincronizar likes pendientes
-    private val vm by inject<HomeViewModel>(HomeViewModel::class.java)
+    // Obtiene una instancia del RealmRepositoryImpl para sincronizar likes pendientes
+    private val realmRepository by inject<RealmRepositoryImpl>(RealmRepositoryImpl::class.java)
 
     // StateFlow para exponer el estado de conectividad actual
     private val _isConnected = MutableStateFlow(false)
@@ -41,7 +44,11 @@ class NetworkMonitor(context: Context) {
             super.onAvailable(network)
             _isConnected.value = true
             println("onAvailable sync data")
-            vm.syncPendingLikes()
+
+            // Sincroniza los likes pendientes almacenados localmente
+            CoroutineScope(Dispatchers.IO).launch {
+                realmRepository.syncPendingLikes()
+            }
         }
 
         // Se ejecuta cuando se pierde la conectividad de red

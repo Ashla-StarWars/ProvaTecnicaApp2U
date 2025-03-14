@@ -10,7 +10,8 @@ import enric.domenech.app2u.ui.screens.home.components.HomeTopAppBar
 
 @Composable
 fun HomeView(
-    nav: NavHostController, vm: HomeViewModel
+    nav: NavHostController,
+    vm: HomeViewModel
 ) {
 
     val data = vm.dataState.collectAsState()
@@ -20,7 +21,12 @@ fun HomeView(
         bottomBar = { HomeBottomAppBar() },
         content = { paddingValues ->
             HomeContent(
-                vm = vm, nav = nav, data = data.value, paddingValues = paddingValues
+                nav = nav,
+                data = data.value,
+                paddingValues = paddingValues,
+                onFavoriteClick = { itemId ->
+                    vm.toggleFavorite(itemId)
+                }
             )
         })
 }
