@@ -16,10 +16,30 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 
+/**
+ * NetworkServiceImpl
+ *
+ * Implementación de la interfaz NetworkService que maneja todas las comunicaciones
+ * con el servidor remoto de la aplicación.
+ *
+ * Esta clase es responsable de:
+ * - Obtener datos desde el API REST
+ * - Convertir respuestas JSON a modelos de dominio
+ * - Descargar y procesar imágenes desde URLs remotas
+ * - Manejar errores de red y conversión de datos
+ *
+ * Utiliza Ktor Client para las peticiones HTTP y kotlinx.serialization
+ * para deserializar las respuestas JSON.
+ */
+
 class NetworkServiceImpl(
     private val client: HttpClient, private val json: Json
 ) : NetworkService {
 
+    /**
+     * Obtiene la lista de resultados desde el endpoint principal.
+     * Para cada resultado, también descarga y asocia su imagen correspondiente.
+     */
     override suspend fun fetchDataFromServer(): List<Result> {
         return try {
             withContext(Dispatchers.IO) {
@@ -47,6 +67,10 @@ class NetworkServiceImpl(
         }
     }
 
+    /**
+     * Descarga una imagen desde una URL y la convierte a formato ImageBitmap
+     * para su uso directo en la UI con Jetpack Compose.
+     */
     override suspend fun fetchImageAsBitmap(imageUrl: String): ImageBitmap? {
         val byteArray = fetchImage(imageUrl)
         return if (byteArray.isNotEmpty()) {
@@ -57,10 +81,18 @@ class NetworkServiceImpl(
         }
     }
 
-    override suspend fun fetchNextPage(page: Int): List<Result> {
+    /**
+     * función para paginación de resultados.
+     * Pendiente de implementar.
+     */
+    override suspend fun fetchNextPage(page: String): List<Result> {
         TODO("Not yet implemented")
     }
 
+    /**
+     * Descarga una imagen desde una URL y la devuelve como array de bytes.
+     * Maneja los errores de red y devuelve un array vacío en caso de fallo.
+     */
     override suspend fun fetchImage(imageUrl: String): ByteArray {
         return try {
             withContext(Dispatchers.IO) {

@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +22,7 @@ import enric.domenech.app2u.ui.screens.home.HomeViewModel
 fun HomeList(
     data: List<Result>,
     nav: NavHostController,
-    vm: HomeViewModel
+    vm: HomeViewModel,
 ) {
     if (data.isEmpty()) {
         Box(
@@ -46,8 +43,9 @@ fun HomeList(
             .background(MaterialTheme.colorScheme.background)
     ) {
         data.forEach { item ->
-            val isFavorite by remember { mutableStateOf(item.isFavorite) }
-            HomeItemList(nav, item, isFavorite, vm)
+            HomeItemList(nav, item, onFavoriteClick= {
+                vm.toggleFavorite(item.id)
+            })
         }
     }
 }

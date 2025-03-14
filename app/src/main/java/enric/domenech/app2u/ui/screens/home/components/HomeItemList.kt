@@ -14,6 +14,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,45 +31,41 @@ import androidx.navigation.NavHostController
 import enric.domenech.app2u.R
 import enric.domenech.app2u.domain.models.Result
 import enric.domenech.app2u.ui.navigation.DETAIL
-import enric.domenech.app2u.ui.screens.home.HomeViewModel
 
 @Composable
 fun HomeItemList(
     nav: NavHostController,
     item: Result,
-    isFavorite: Boolean?,
-    vm: HomeViewModel
+    onFavoriteClick: () -> Unit,
 ) {
-    var isFavorite1 = isFavorite
+    var isFavorite by remember { mutableStateOf(item.isFavorite) }
     Column(
         modifier = Modifier.clickable {
             nav.navigate(DETAIL(item.id))
-        }
-    ) {
+        }) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(16.dp)
+            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                item.firstName + " " + item.lastName,
-                style = TextStyle(
-                    fontSize = 28.sp,
-                    color = MaterialTheme.colorScheme.onBackground
+                item.firstName + " " + item.lastName, style = TextStyle(
+                    fontSize = 28.sp, color = MaterialTheme.colorScheme.onBackground
                 )
             )
             Spacer(Modifier.weight(1f))
             IconButton(
                 onClick = {
-                    isFavorite1 = !isFavorite1!!
-                    vm.toggleFavorite(item.id)
-                    item.isFavorite = isFavorite1
-                }
-            ) {
+                    isFavorite = !isFavorite!!
+                    item.isFavorite = isFavorite
+                    onFavoriteClick()
+                }) {
                 Icon(
                     modifier = Modifier.size(32.dp),
-                    painter = if (!isFavorite1!!) painterResource(R.drawable.ic_heart) else painterResource(
-                        R.drawable.ic_heart_fill
-                    ),
+                    painter =
+                        if (isFavorite == false)
+                            painterResource(R.drawable.ic_heart)
+                        else painterResource(
+                            R.drawable.ic_heart_fill
+                        ),
                     contentDescription = "Favorite",
                     tint = MaterialTheme.colorScheme.onBackground
                 )
