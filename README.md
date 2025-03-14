@@ -11,10 +11,10 @@ ha de ser vertical.
 1 – Obtenció de dades
 El primer punt és obtenir les dades que s'han de mostrar a la pantalla, per fer-ho és necessari cridar el
 següent web service:
-- GET URL: https://inphototest.app2u.es/api/photographer/
+- GET URL: https://inphototest.app2u.es
 - Basic authentication
 o usuari: test@gmail.com
-o password: 1234
+o password: ******
 o Pots hardcodejar els valors a la petició.
 - Altres headers:
 o Accept: application/json
