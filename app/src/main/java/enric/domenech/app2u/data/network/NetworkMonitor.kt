@@ -45,6 +45,7 @@ class NetworkMonitor(context: Context) {
             _isConnected.value = true
             println("onAvailable sync data")
 
+            // Sincroniza los likes pendientes almacenados localmente
             CoroutineScope(Dispatchers.IO).launch {
                 realmRepository.syncPendingLikes()
             }

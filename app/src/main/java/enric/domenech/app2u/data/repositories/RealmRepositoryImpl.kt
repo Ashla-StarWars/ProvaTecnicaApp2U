@@ -24,9 +24,15 @@ class RealmRepositoryImpl(
     private val networkService: NetworkServiceImpl
 ) : RealmRepository {
 
+    // StateFlow para almacenar y exponer los datos actuales de la aplicación
     private val _dataState = MutableStateFlow<List<Result>>(emptyList())
     val dataState: StateFlow<List<Result>> get() = _dataState
 
+    /**
+     * Obtiene un resultado por su ID
+     * @param id ID del resultado a buscar
+     * @return Result encontrado o null
+     */
     override fun findResultById(id: Int): Result? {
         realm.query(RealmResult::class).find().firstOrNull { it.id == id }.let {
             if (it != null) {
@@ -114,6 +120,10 @@ class RealmRepositoryImpl(
         }
     }
 
+    /**
+     * Actualiza el estado interno con nuevos datos
+     * @param id item a actualizar
+     */
     override suspend fun toggleFavorite(id: Int) {
         withContext(Dispatchers.IO) {
             try {

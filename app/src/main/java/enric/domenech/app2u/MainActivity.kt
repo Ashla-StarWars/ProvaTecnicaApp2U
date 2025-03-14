@@ -20,6 +20,7 @@ import org.koin.core.annotation.KoinExperimentalAPI
  * - Configurar el sistema de navegación de la aplicación
  * - Aplicar el tema visual personalizado (ProvaTecnicaApp2UTheme)
  * - Habilitar la visualización edge-to-edge para una experiencia inmersiva
+ * - Inicializar el contexto de Koin para inyectar dependencias en la aplicación
  *
  * La clase utiliza Jetpack Compose como framework de UI y configura
  * un NavController central que gestiona toda la navegación entre pantallas
@@ -34,7 +35,8 @@ class MainActivity : ComponentActivity() {
      * 1. Llama al función onCreate de la clase padre
      * 2. Habilita el modo edge-to-edge para aprovechar toda la pantalla
      * 3. Configura el contenido Compose de la actividad con el tema personalizado
-     * 4. Inicializa el sistema de navegación con un controlador de navegación
+     * 4. Inicializa el contexto de Koin para inyectar dependencias en la aplicación
+     * 5. Inicializa el sistema de navegación con un controlador de navegación
      *
      * @param savedInstanceState Estado guardado de la actividad, puede ser null si es la primera creación.
      */
